@@ -164,6 +164,40 @@ label {
   color: #7f8c8d;
 }
 
+/* Sezione di Debug (fix applicato) */
+.debug-panel {
+  margin-top: 30px;
+  padding: 15px;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  color: #444;
+  overflow-x: auto; /* Supporta testo lungo */
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.debug-panel h4 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.debug-panel pre {
+  background: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px dashed #ccc;
+  color: #555;
+  font-size: 0.85rem;
+  overflow-x: auto;
+}
+
+.debug-panel .error-message {
+  color: red;
+  font-weight: bold;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {
@@ -178,26 +212,24 @@ label {
     padding: 10px 15px;
     font-size: 0.9rem;
   }
+
+  .debug-panel pre {
+    font-size: 0.75rem;
+  }
 }
 
-/* Debugging */
-.debug-panel {
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #f5f5f5;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+/* Animazioni */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.debug-panel h4 {
-  margin-bottom: 10px;
-  font-size: 1.1rem;
-}
-
-pre {
-  background-color: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  color: #666;
+.container {
+  animation: fadeIn 0.3s ease-out;
 }
