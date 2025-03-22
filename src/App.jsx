@@ -1,15 +1,61 @@
+import React, { useState } from 'react';
+
+function App() {
+  // Stati principali
+  const [patients, setPatients] = useState([]);
+  const [currentView, setCurrentView] = useState('home');
+  const [currentPatient, setCurrentPatient] = useState(null);
+  const [newPatient, setNewPatient] = useState({
+    name: '',
+    surname: '',
+    birthDate: '',
+    gender: '',
+    analgesiaType: '',
+    painLevel: '',
+    notes: ''
+  });
+
+  // Vista Home
+  const HomeView = () => (
+    <div className="container">
+      <h1>Gestione Pazienti</h1>
+      <div className="buttons">
+        <button 
+          onClick={() => setCurrentView('new')} 
+          className="button-primary"
+        >
+          Nuovo Paziente
+        </button>
+        <button 
+          onClick={() => setCurrentView('list')} 
+          className="button-secondary"
+        >
+          Lista Pazienti ({patients.length})
+        </button>
+      </div>
+    </div>
+  );
+
   // Form Nuovo Paziente
   const NewPatientForm = () => {
     const handleSubmit = (e) => {
       e.preventDefault();
-      setPatients(prev => [...prev, { ...newPatient, id: Date.now() }]);
+      const patientToAdd = {
+        ...newPatient,
+        id: Date.now(),
+        createdAt: new Date().toISOString(),
+        evaluations: []
+      };
+      
+      setPatients(prevPatients => [...prevPatients, patientToAdd]);
       setNewPatient({
         name: '',
         surname: '',
         birthDate: '',
         gender: '',
         analgesiaType: '',
-        painLevel: ''
+        painLevel: '',
+        notes: ''
       });
       setCurrentView('list');
     };
@@ -34,8 +80,10 @@
               value={newPatient.name}
               onChange={handleInputChange}
               required
+              className="input-field"
             />
           </div>
+
           <div className="form-group">
             <label>Cognome:</label>
             <input
@@ -44,8 +92,10 @@
               value={newPatient.surname}
               onChange={handleInputChange}
               required
+              className="input-field"
             />
           </div>
+
           <div className="form-group">
             <label>Data di Nascita:</label>
             <input
@@ -54,8 +104,10 @@
               value={newPatient.birthDate}
               onChange={handleInputChange}
               required
+              className="input-field"
             />
           </div>
+
           <div className="form-group">
             <label>Sesso:</label>
             <select
@@ -63,12 +115,14 @@
               value={newPatient.gender}
               onChange={handleInputChange}
               required
+              className="select-field"
             >
               <option value="">Seleziona...</option>
               <option value="M">M</option>
               <option value="F">F</option>
             </select>
           </div>
+
           <div className="form-group">
             <label>Tipo Analgesia:</label>
             <select
@@ -76,6 +130,119 @@
               value={newPatient.analgesiaType}
               onChange={handleInputChange}
               required
+              className="select-field"
             >
               <option value="">Seleziona...</option>
-              <option value="PCA">PCA
+              <option value="PCA">PCA</option>
+              <option value="Peridurale">Peridurale</option>
+              <option value="Blocco">Blocco One Shot</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Note:</label>
+            <textarea
+              name="notes"
+              value={newPatient.notes}
+              onChange={handleInputChange}
+              className="textarea-field"
+              rows="3"
+            />
+          </div>
+
+          <div className="buttons">
+            <button type="submit" className="button-primary">
+              Salva Paziente
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setCurrentView('home')}
+              className="button-secondary"
+            >
+              Annulla
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  };
+
+  // Lista Pazienti
+  const PatientList = () => {
+    const formatDate = (dateString) => {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('it-IT');
+    };
+
+    const handleDeletePatient = (patientId) => {
+      if (window.confirm('Sei sicuro di voler eliminare questo paziente?')) {
+        setPatients(prevPatients => 
+          prevPatients.filter(patient => patient.id !== patientId)
+        );
+      }
+    };
+
+    return (
+      <div className="container">
+        <h2>Lista Pazienti</h2>
+        {patients.length === 0 ? (
+          <div className="empty-state">
+            <p>Nessun paziente registrato</p>
+            <button 
+              onClick={() => setCurrentView('new')}
+              className="button-primary"
+            >
+              Aggiungi Paziente
+            </button>
+          </div>
+        ) : (
+          <div className="patient-list">
+            {patients.map(patient => (
+              <div key={patient.id} className="patient-card">
+                <div className="patient-card-header">
+                  <h3>{patient.name} {patient.surname}</h3>
+                  <div className="patient-card-actions">
+                    <button 
+                      onClick={() => handleDeletePatient(patient.id)}
+                      className="button-danger"
+                    >
+                      Elimina
+                    </button>
+                  </div>
+                </div>
+                <div className="patient-card-body">
+                  <p><strong>Data di nascita:</strong> {formatDate(patient.birthDate)}</p>
+                  <p><strong>Sesso:</strong> {patient.gender}</p>
+                  <p><strong>Tipo analgesia:</strong> {patient.analgesiaType}</p>
+                  {patient.notes && (
+                    <p><strong>Note:</strong> {patient.notes}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="buttons">
+          <button 
+            onClick={() => setCurrentView('home')}
+            className="button-secondary"
+          >
+            Torna alla Home
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Router principale
+  return (
+    <div className="app">
+      {currentView === 'home' && <HomeView />}
+      {currentView === 'new' && <NewPatientForm />}
+      {currentView === 'list' && <PatientList />}
+    </div>
+  );
+}
+
+export default App;
