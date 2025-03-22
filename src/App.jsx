@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 function App() {
-  // Stati principali
   const [patients, setPatients] = useState([]);
   const [currentView, setCurrentView] = useState('home');
   const [newPatient, setNewPatient] = useState({
@@ -10,37 +9,19 @@ function App() {
     birthDate: '',
     gender: '',
     analgesiaType: '',
-    painLevel: ''
+    painLevel: '',
+    notes: ''
   });
-
-  // Salva i pazienti nel localStorage
-  useEffect(() => {
-    const savedPatients = localStorage.getItem('patients');
-    if (savedPatients) {
-      setPatients(JSON.parse(savedPatients));
-    }
-  }, []);
-
-  // Aggiorna localStorage quando patients cambia
-  useEffect(() => {
-    localStorage.setItem('patients', JSON.stringify(patients));
-  }, [patients]);
 
   // Vista Home
   const HomeView = () => (
     <div className="container">
       <h1>Gestione Pazienti</h1>
       <div className="buttons">
-        <button 
-          onClick={() => setCurrentView('new')}
-          className="button-primary"
-        >
+        <button onClick={() => setCurrentView('new')}>
           Nuovo Paziente
         </button>
-        <button 
-          onClick={() => setCurrentView('list')}
-          className="button-secondary"
-        >
+        <button onClick={() => setCurrentView('list')}>
           Lista Pazienti ({patients.length})
         </button>
       </div>
@@ -64,7 +45,8 @@ function App() {
         birthDate: '',
         gender: '',
         analgesiaType: '',
-        painLevel: ''
+        painLevel: '',
+        notes: ''
       });
       setCurrentView('list');
     };
@@ -148,6 +130,17 @@ function App() {
             </select>
           </div>
 
+          <div className="form-group">
+            <label>Note:</label>
+            <textarea
+              name="notes"
+              value={newPatient.notes}
+              onChange={handleInputChange}
+              className="textarea-field"
+              rows="3"
+            />
+          </div>
+
           <div className="buttons">
             <button type="submit" className="button-primary">
               Salva Paziente
@@ -190,14 +183,13 @@ function App() {
           <div className="patient-list">
             {patients.map(patient => (
               <div key={patient.id} className="patient-card">
-                <div className="patient-card-header">
-                  <h3>{patient.name} {patient.surname}</h3>
-                </div>
-                <div className="patient-card-body">
-                  <p><strong>Data di nascita:</strong> {formatDate(patient.birthDate)}</p>
-                  <p><strong>Sesso:</strong> {patient.gender}</p>
-                  <p><strong>Tipo analgesia:</strong> {patient.analgesiaType}</p>
-                </div>
+                <h3>{patient.name} {patient.surname}</h3>
+                <p><strong>Data di nascita:</strong> {formatDate(patient.birthDate)}</p>
+                <p><strong>Sesso:</strong> {patient.gender}</p>
+                <p><strong>Tipo analgesia:</strong> {patient.analgesiaType}</p>
+                {patient.notes && (
+                  <p><strong>Note:</strong> {patient.notes}</p>
+                )}
               </div>
             ))}
           </div>
@@ -214,7 +206,6 @@ function App() {
     );
   };
 
-  // Router principale
   return (
     <div className="app">
       {currentView === 'home' && <HomeView />}
@@ -225,4 +216,3 @@ function App() {
 }
 
 export default App;
-
